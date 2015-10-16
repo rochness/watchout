@@ -21,29 +21,47 @@ for(var i = 0; i < 100; i++){
 var canvas = d3.select('.board').selectAll('svg')
                   .data([1])
                   .enter()
-                  .append('svg')
+                  .append('svg');
+                  canvas
                   .attr('viewBox', '0 0' + ' ' + canvasWidth + ' ' + canvasHeight);
 
 var createEnemies = function() {
-  canvas.selectAll('circle')
+  canvas.selectAll('.enemies')
                  .data(enemies)
                  .enter()
                  .append('circle')
                  .attr('cx', function(d){return d.x;})
                  .attr('cy', function(d){return d.y;})
-                 .attr('r', radius);
+                 .attr('r', radius)
+                 .attr('class', 'enemies');
 }
 
 createEnemies();
 
 var moveEnemies = function(){
-  canvas.selectAll('circle')
+  canvas.selectAll('.enemies')
                   //.data(enemies)
                   .transition().duration(transitionTime)
                   .attr('cx', function(){return Math.random() * (canvasWidth - (radius * 2)) + radius;})
                   .attr('cy', function(){return Math.random() * (canvasHeight - (radius * 2)) + radius;});
                 
 }
+var dragMove = function(d) {
+  //var position = d3.mouse(canvas[0]);
+  d3.select(this)
+    .attr("cx", Math.max(radius, Math.min(canvasWidth - radius, d3.event.x)))
+    .attr("cy", Math.max(radius, Math.min(canvasHeight - radius, d3.event.y)))
+}
+
+var drag = d3.behavior.drag().on("drag", dragMove);
+
+var player = canvas.selectAll('circles').data([1]).enter().append('circle')
+                   .attr('cx',canvasWidth / 2)
+                   .attr('cy',canvasHeight / 2)
+                   .attr('r',radius)
+                   .attr('fill','red')
+                   .attr('class','player')
+                   .call(drag);
 
 setInterval(moveEnemies, collisionTime);
 
