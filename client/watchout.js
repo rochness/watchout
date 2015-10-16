@@ -9,10 +9,12 @@ var enemies = [];
 var canvasWidth = 1000; 
 var canvasHeight = 1000;
 var radius = 10;
+var transitionTime = 850;
+var collisionTime = 1000;
 
 for(var i = 0; i < 100; i++){
   var x = Math.random() * (canvasWidth - (radius * 2)) + radius;
-  var y = Math.random() * (canvasWidth - (radius * 2)) + radius;
+  var y = Math.random() * (canvasHeight - (radius * 2)) + radius;
   enemies.push(new Enemy(x,y));
 }
 
@@ -33,5 +35,16 @@ var createEnemies = function() {
 }
 
 createEnemies();
+
+var moveEnemies = function(){
+  canvas.selectAll('circle')
+                  //.data(enemies)
+                  .transition().duration(transitionTime)
+                  .attr('cx', function(){return Math.random() * (canvasWidth - (radius * 2)) + radius;})
+                  .attr('cy', function(){return Math.random() * (canvasHeight - (radius * 2)) + radius;});
+                
+}
+
+setInterval(moveEnemies, collisionTime);
 
 
