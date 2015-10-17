@@ -2,13 +2,24 @@
 
 /* Note: an asteroid image is included in this repo.
 Feel free to use it if you like. */
+body{
+  background-image: url('galaxy.jpg');
+  background-size: cover; 
+}
+
+.scoreboard {
+  float: left;
+  background: white;
+  padding: 5px;
+}
+
 .player {
   position: relative;
   z-index: 1;
 }
 
 .enemies {
-  -webkit-animation: spin 3s infinite;
+  -webkit-animation: spin 0.5s infinite;
   -webkit-animation-timing-function: linear; 
   transform-origin: center;
   fill: url(#img1);
