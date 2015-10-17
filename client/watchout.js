@@ -38,15 +38,54 @@ var createEnemies = function() {
 
 createEnemies();
 
-var moveEnemies = function(){
+function collisionDetection(enemy, callback) {
+  var playerX = player.attr('cx');
+  var playerY = player.attr('cy');
+  var enemyX = enemy.attr('cx');
+  var enemyY = enemy.attr('cy');
+  var r = player.attr('r');
+  //east
+  if((playerX + r) > (enemyX - r) && enemyX > playerX){
+    //south
+    if((playerY + r) > (enemyY - r) && enemyY > playerY){
+      callback();
+      //north
+    } else if ((playerY - r) < (enemyY + r) && (enemyY < playerY)){
+      callback();
+    }
+  //west
+  } else if((playerX - r) < (enemyX + r) && enemyX < playerX) {
+    if((playerY + r) > (enemyY - r) && enemyY > playerY){
+      callback();
+      //north
+    } else if ((playerY - r) < (enemyY + r) && (enemyY < playerY)) {
+      callback();
+    }
+  }
+}
+
+function checkCollision() {
+  var enemy = d3.select(this);
+  var startX = enemy.attr('cx');
+  var startY = enemy.attr('cy');
+
+  var endX = Math.random() * (canvasWidth - (radius * 2)) + radius;
+  var endY = Math.random() * (canvasHeight - (radius * 2)) + radius;
+
+  return function(t) {
+    collisionDetection(enemy, function(){console.log('HIT!!');});
+
+  }
+}
+
+function moveEnemies () {
   canvas.selectAll('.enemies')
                   //.data(enemies)
                   .transition().duration(transitionTime)
-                  .attr('cx', function(){return Math.random() * (canvasWidth - (radius * 2)) + radius;})
-                  .attr('cy', function(){return Math.random() * (canvasHeight - (radius * 2)) + radius;});
+                  .tween('custom',checkCollision);
                 
 }
-var dragMove = function(d) {
+function dragMove (d) {
   //var position = d3.mouse(canvas[0]);
   d3.select(this)
     .attr("cx", Math.max(radius, Math.min(canvasWidth - radius, d3.event.x)))
