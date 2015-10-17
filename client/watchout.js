@@ -4,13 +4,24 @@ var Enemy = function(x,y){
   this.x = x;
   this.y = y;
 }
+var highScore = 0;
+var currentScore = 0;
+var collisions = 0;
 
 var enemies = [];
 var canvasWidth = 1000; 
 var canvasHeight = 1000;
 var radius = 10;
-var transitionTime = 850;
-var collisionTime = 1000;
+var transitionTime = 4000;
+var collisionTime = 5000;
+
+var runClock = function(){
+  setInterval(function(){
+    d3.select('.current').select('span').text(currentScore++);
+  }, 100);
+}
+
+runClock();
 
 for(var i = 0; i < 100; i++){
   var x = Math.random() * (canvasWidth - (radius * 2)) + radius;
@@ -44,37 +55,60 @@ function collisionDetection(enemy, callback) {
   var enemyX = enemy.attr('cx');
   var enemyY = enemy.attr('cy');
   var r = player.attr('r');
-  //east
-  if((playerX + r) > (enemyX - r) && enemyX > playerX){
-    //south
-    if((playerY + r) > (enemyY - r) && enemyY > playerY){
-      callback();
-      //north
-    } else if ((playerY - r) < (enemyY + r) && (enemyY < playerY)){
-      callback();
-    }
-  //west
-  } else if((playerX - r) < (enemyX + r) && enemyX < playerX) {
-    if((playerY + r) > (enemyY - r) && enemyY > playerY){
-      callback();
-      //north
-    } else if ((playerY - r) < (enemyY + r) && (enemyY < playerY)) {
-      callback();
-    }
-  }
-}
+  var hypot = Math.sqrt(Math.pow((playerX-enemyX), 2) + Math.pow((playerY-enemyY), 2));
+  if(hypot < r * 2){
+    callback();
+  }  
 
+  // //east
+  // if((playerX + r) > (enemyX - r) && enemyX > playerX){
+  //   //south
+  //   if((playerY + r) > (enemyY - r) && enemyY > playerY){
+  //     callback();
+  //     //north
+  //   } else if ((playerY - r) < (enemyY + r) && (enemyY < playerY)){
+  //     callback();
+  //   }
+  // //west
+  // } else if((playerX - r) < (enemyX + r) && enemyX < playerX) {
+  //   if((playerY + r) > (enemyY - r) && enemyY > playerY){
+  //     callback();
+  //     //north
+  //   } else if ((playerY - r) < (enemyY + r) && (enemyY < playerY)) {
+  //     callback();
+  //   }
+  // }
+}
+var triggered = false;
 function checkCollision() {
   var enemy = d3.select(this);
-  var startX = enemy.attr('cx');
-  var startY = enemy.attr('cy');
+  var hit = false;
+  var startX = Number(enemy.attr('cx'));
+  var startY = Number(enemy.attr('cy'));
 
   var endX = Math.random() * (canvasWidth - (radius * 2)) + radius;
   var endY = Math.random() * (canvasHeight - (radius * 2)) + radius;
 
   return function(t) {
-    collisionDetection(enemy, function(){console.log('HIT!!');});
-
+    collisionDetection(enemy, function(){
+      if(hit === false){
+        collisions++;
+        d3.select('.collisions').select('span').text(collisions);
+        if(currentScore > highScore){
+          highScore = currentScore;
+          d3.select('.highscore').select('span').text(currentScore);
+        }
+        currentScore = 0;
+        hit = true;
+      }
+    });
+    if (triggered === false) {
+      console.log(enemy);
+      triggered = true;
+    }
+    // debugger;
+    enemy.attr('cx', (endX - startX) * Math.pow(t,2) + startX);
+    enemy.attr('cy', (endY - startY) * Math.pow(t,2) + startY);
   }
 }
 
