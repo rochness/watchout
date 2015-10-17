@@ -12,8 +12,8 @@ var enemies = [];
 var canvasWidth = 1000; 
 var canvasHeight = 1000;
 var radius = 10;
-var transitionTime = 4000;
-var collisionTime = 5000;
+var transitionTime = 1000;
+var collisionTime = 2000;
 
 var runClock = function(){
   setInterval(function(){
@@ -23,7 +23,7 @@ var runClock = function(){
 
 runClock();
 
-for(var i = 0; i < 100; i++){
+for(var i = 0; i < 150; i++){
   var x = Math.random() * (canvasWidth - (radius * 2)) + radius;
   var y = Math.random() * (canvasHeight - (radius * 2)) + radius;
   enemies.push(new Enemy(x,y));
@@ -36,6 +36,21 @@ var canvas = d3.select('.board').selectAll('svg')
                   canvas
                   .attr('viewBox', '0 0' + ' ' + canvasWidth + ' ' + canvasHeight);
 
+canvas.append('defs').append('pattern')
+                      .attr('id','img1')
+                      .attr('patternUnits','objectBoundingBox')
+                      .attr('x',0)
+                      .attr('y',0)
+                      .attr('width',radius*2)
+                      .attr('height',radius*2)
+                      .append('image')
+                      .attr('xlink:href','shuriken.png')
+                      .attr('x','0')
+                      .attr('y','0')
+                      .attr('width',radius*2)
+                      .attr('height',radius*2)
+                    
+
 var createEnemies = function() {
   canvas.selectAll('.enemies')
                  .data(enemies)
@@ -44,7 +59,8 @@ var createEnemies = function() {
                  .attr('cx', function(d){return d.x;})
                  .attr('cy', function(d){return d.y;})
                  .attr('r', radius)
-                 .attr('class', 'enemies');
+                 .attr('class', 'enemies')
+                 .attr('fill', 'url(#img1)');
 }
 
 createEnemies();
@@ -91,6 +107,22 @@ function checkCollision() {
 
   return function(t) {
     collisionDetection(enemy, function(){
+      var playerX = player.attr('cx');
+      var playerY = player.attr('cy');
+      explosionWidth = radius * 10;
+      explosionHeight = radius * 10;
+
+      canvas.append('image').attr('x', Number(playerX) - explosionWidth / 2)
+                            .attr('y', Number(playerY) - explosionHeight / 2)
+                            .attr('xlink:href', 'explosion.gif')
+                            .attr('width', explosionWidth)
+                            .attr('height', explosionHeight)
+                            .transition().duration(1000)
+                            .style({'opacity': 0, 'position':'relative','z-index':-1});
+                            // .remove();
+
+
+
       if(hit === false){
         collisions++;
         d3.select('.collisions').select('span').text(collisions);

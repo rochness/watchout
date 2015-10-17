@@ -2,4 +2,25 @@
 
 /* Note: an asteroid image is included in this repo.
 Feel free to use it if you like. */
+.player {
+  position: relative;
+  z-index: 1;
+}
 
+.enemies {
+  -webkit-animation: spin 3s infinite;
+  -webkit-animation-timing-function: linear; 
+  transform-origin: center;
+  fill: url(#img1);
+
+}
+
+@-webkit-keyframes spin {
+  0% {
+    transform:rotate(0deg);
+
+  }
+  100% {
+    transform:rotate(360deg);
+  }
+}
